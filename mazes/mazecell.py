@@ -35,7 +35,7 @@ class MazeCell:
 
     def __lt__(self, other):
         """For sorting purposes, all maze cells are equal in value"""
-        return True
+        return False
 
     def __init__(
         self,
@@ -48,9 +48,7 @@ class MazeCell:
         self.row: int = row
         self.col: int = col
         self.tiles: List[List[int]] = [
-            [TileState.WALL_STATE, TileState.WALL_STATE, TileState.WALL_STATE],
-            [TileState.WALL_STATE, TileState.WALL_STATE, TileState.WALL_STATE],
-            [TileState.WALL_STATE, TileState.WALL_STATE, TileState.WALL_STATE],
+            [TileState.WALL_STATE for _ in range(3)] for _ in range(3)
         ]
         self.canvas = canvas
 
