@@ -191,7 +191,7 @@ def astar(maze_map: MazeMap, start: MazeCell, end: MazeCell) -> None:
         prev = cur
 
 
-SOLVERS = {
+SOLVER = {
     "dfs": dfs,
     "dijkstra": dijkstra,
     "astar": astar

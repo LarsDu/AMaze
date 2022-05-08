@@ -9,7 +9,7 @@ from typing import Dict, Set, List, Tuple, Any
 import random
 from collections import deque
 from mazes.mazemap import MazeMap
-from mazes.mazecell import MazeCell
+from mazes.mazecell import MazeCell, TileState
 from mazes.constants import DIRECTIONS
 
 
@@ -86,7 +86,7 @@ def generate_bfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
         
     yield False
 
-def generate_prims_maze(maze_map: MazeMap, seed:int = 42):
+def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
     """ Generate a maze using randomized Prim's algorithm
 
     https://hurna.io/academy/algorithms/maze_generator/prim_s.html
@@ -130,5 +130,5 @@ def generate_prims_maze(maze_map: MazeMap, seed:int = 42):
 MAZE = {
     "dfs": generate_dfs_maze,
     "bfs": generate_bfs_maze,
-    "prims": generate_prims_maze
+    "prims": generate_prims_maze,
 }

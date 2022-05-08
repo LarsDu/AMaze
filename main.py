@@ -6,7 +6,7 @@ from pygame import Color
 from mazes.mazemap import MazeMap
 from mazes.mazecell import MazeCell
 from mazes.mazegen import MAZE
-from mazes.mazesolver import SOLVERS
+from mazes.mazesolver import SOLVER
 import click
 
 @click.command()
@@ -14,13 +14,15 @@ import click
     "--maze",
     "-m",
     type=str,
-    default="prims"
+    default="prims",
+    help=f"Maze type from {list(MAZE.keys())}"
 )
 @click.option(
     "--solver",
     "-s",
     type=str,
-    default="astar"
+    default="astar",
+    help=f"Path solver from {list(SOLVER.keys())}"
 )
 @click.option(
     "--num_rows",
@@ -37,12 +39,14 @@ import click
 @click.option(
     "--seed",
     type=int,
-    default=42
+    default=42,
+    help="Random seed for maze generation"
 )
 @click.option(
     "--tick",
     type=int,
-    default=3000
+    default=3000,
+    help="Tick rate. Higher means faster maze generation"
 )
 def main(
     maze,
@@ -54,7 +58,8 @@ def main(
 ):
     pygame.init()
 
-    canvas = pygame.display.set_mode(((400+num_cols)*MazeCell.TILE_WIDTH, (400+num_rows)*MazeCell.TILE_HEIGHT))
+    scale = MazeCell.TILE_HEIGHT
+    canvas = pygame.display.set_mode((scale*(num_cols+1)*MazeCell.TILE_WIDTH, scale*(num_rows+1)*MazeCell.TILE_HEIGHT))
     clock = pygame.time.Clock()
     pygame.display.set_caption("Mazes")
     canvas.fill(Color(255,255,255,255))
@@ -63,7 +68,7 @@ def main(
     maze_map = MazeMap(num_rows, num_cols, canvas)
     maze_map.draw()
     maze_gen = MAZE[maze](maze_map, seed)
-    maze_solver = SOLVERS[solver](maze_map, maze_map.cells[0][0], maze_map.cells[-1][-1])
+    maze_solver = SOLVER[solver](maze_map, maze_map.cells[0][0], maze_map.cells[-1][-1])
     chain_gen = chain(maze_gen, maze_solver)
     while not exit:
         try:

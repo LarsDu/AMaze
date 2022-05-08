@@ -13,8 +13,8 @@ class TileState(Enum):
     PATH_STATE = 3
 
 class MazeCell:
-    TILE_WIDTH = 1
-    TILE_HEIGHT = 1
+    TILE_WIDTH = 3
+    TILE_HEIGHT = 3
     CELL_WIDTH = TILE_WIDTH * 3
     CELL_HEIGHT = TILE_HEIGHT * 3
     WALL_COLOR: Color = Color(0,0,4,255),
