@@ -73,14 +73,15 @@ def main(
     while not exit:
         try:
             next(chain_gen)
+            clock.tick(tick)
+            pygame.display.update()
         except StopIteration:
             pass
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit = True
-        clock.tick(tick)
-        pygame.display.update()
+        
 if __name__ == "__main__":
     main()
 

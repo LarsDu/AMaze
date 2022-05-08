@@ -30,7 +30,7 @@ def generate_dfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
         current_cell.connect(pr, pc)
         parent_cell.connect(cr, cc)
         visited[cr][cc] = True
-        yield True
+        yield False
         # Shuffle
         random.shuffle(directions)
 
@@ -48,11 +48,14 @@ def generate_dfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
                 stack.append((nr, nc))
                 parent[(nr,nc)] = (cr,cc)
         
-    yield False
+    yield True
 
 
 def generate_bfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
     """ Generate a maze using randomized breadth-first search
+
+    This winds up being quite slow as most expansion directions are not valid
+    after a while
     """
     random.seed(seed)
     directions = list(DIRECTIONS)
@@ -68,7 +71,7 @@ def generate_bfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
         current_cell.connect(pr, pc)
         parent_cell.connect(cr, cc)
         visited[cr][cc] = True
-        yield True
+        yield False
         # Shuffle
         random.shuffle(directions)
 
@@ -84,7 +87,7 @@ def generate_bfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
                 dq.append((nr, nc))
                 parent[(nr,nc)] = (cr,cc)
         
-    yield False
+    yield True
 
 def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
     """ Generate a maze using randomized Prim's algorithm
@@ -106,7 +109,7 @@ def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
         current_cell.connect(pr, pc)
         parent_cell.connect(cr, cc)
         visited[cr][cc] = True
-        yield True
+        yield False
         # Shuffle
 
         # Prim's does not NEED a directional shuffle
@@ -125,7 +128,7 @@ def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
                 cell_set.add((nr, nc))
                 parent[(nr,nc)] = (cr,cc)
         
-    yield False
+    yield True
 
 MAZE = {
     "dfs": generate_dfs_maze,
