@@ -2,7 +2,7 @@
 """
 from enum import Enum
 import heapq
-import math 
+from collections import deque
 
 from typing import Tuple, Dict, Set, List, Any
 
@@ -94,6 +94,7 @@ def dijkstra(
 
         if(current == end):
             is_found = True
+            # First path, not shortest
             yield True
             break
         else:
@@ -201,8 +202,65 @@ def astar(maze_map: MazeMap, start: MazeCell, end: MazeCell) -> None:
         yield True
         prev = cur
 
+
+def double_bfs(maze_map: MazeMap, start: MazeCell, end: MazeCell) -> None:
+    """Find a path through a maze with a layer-wise
+    breadth-first from both start and end
+    """
+    dq = deque([(start, TileState.START_SEARCH_STATE), (end, TileState.END_SEARCH_STATE)])
+    # Use to 1s to mark searches from start and 2s to mark searches from end
+    visited: List[List[int]] = [ [TileState.FLOOR_STATE for _ in range(maze_map.num_columns)] for _ in range(maze_map.num_rows)]
+    parents: Dict[MazeCell, MazeCell] = dict() #TODO Replace with linked list
+    is_found = False
+    terminus_a = None
+    terminus_b = None
+    while dq and not is_found:
+        # Visit the entirety of the current layer
+        for _ in range(len(dq)):
+            # Visit current cell
+            current_cell, current_origin = dq.popleft()
+            #visited[current_cell.row][current_cell.col] = 1
+            yield False
+            # Visit conneected neighbors in bounds
+            for dr, dc in DIRECTIONS:
+                nr, nc = current_cell.row + dr, current_cell.col + dc
+                if(
+                    nr >= 0 and
+                    nr < maze_map.num_rows and
+                    nc >= 0 and
+                    nc < maze_map.num_columns
+                ):
+                    neighbor_cell = maze_map.cells[nr][nc]
+                    if(visited[nr][nc] == TileState.FLOOR_STATE):
+                        # If un-visited, add connected neighbor to queue
+                        if (maze_map.query_connected(current_cell, neighbor_cell, current_origin)):
+                            parents[neighbor_cell] = current_cell
+                            visited[nr][nc] = current_origin
+                            dq.append((neighbor_cell, current_origin))
+                    elif(visited[nr][nc] != current_origin):
+                        # Final path possibly located                    
+                        if (maze_map.query_connected(current_cell, neighbor_cell, current_origin)):
+                            terminus_a = neighbor_cell
+                            terminus_b = current_cell
+                            #parents[neighbor_cell] = current_cell
+                            is_found = True
+                            # Reverse the parents path for one of the directions.
+                            #break;
+         
+    for terminus in (terminus_a, terminus_b):
+        cur = terminus
+        prev = terminus
+        while cur and cur != start:
+            cur = parents[cur]
+            cur.connect_cell(prev, floor_state=TileState.PATH_STATE)
+            yield True
+            prev = cur
+        yield True
+
+
 SOLVER = {
     "dfs": dfs,
     "dijkstra": dijkstra,
-    "astar": astar
+    "astar": astar,
+    "double_bfs": double_bfs
 }

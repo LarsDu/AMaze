@@ -3,10 +3,11 @@
 DFS uses a stack, BFS uses a deque, and Prim's uses a set
 """
 
-from enum import Enum
-
 from typing import Dict, Set, List, Tuple, Any
 import random
+
+from itertools import chain
+
 from collections import deque
 from mazes.mazemap import MazeMap
 from mazes.mazecell import MazeCell, TileState
@@ -22,6 +23,7 @@ def generate_dfs_maze(maze_map: MazeMap, seed: int = 42) -> bool:
     visited = [ [False for _ in range(maze_map.num_columns)] for _ in range(maze_map.num_rows)]
     parent: Dict[Tuple[int], Tuple[int]] = {(0,0):(0,0)}
     while stack:
+        #random.shuffle(stack) # Very different looking maze!
         cr, cc = stack.pop()
         # Visit the current cell
         current_cell: MazeCell = maze_map.cells[cr][cc]
@@ -100,7 +102,14 @@ def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
     visited = [ [False for _ in range(maze_map.num_columns)] for _ in range(maze_map.num_rows)]
     parent: Dict[Tuple[int], Tuple[int]] = {(0,0):(0,0)}
     while len(cell_set) > 0:
-        random_cell = cell_set.pop()
+        # Note cell_set.pop is not random and will lead to mazes with long corridors
+        # Randomly select between the two to get a mix of uniform and long corridor maze
+        #mode = random.choice((True, False))
+        #if(mode):
+        #    random_cell = cell_set.pop() #Note pop is not random
+        #else:
+        random_cell = random.sample(cell_set,1)[0]
+        cell_set.remove(random_cell)
         cr, cc = random_cell
         # Visit the current cell
         current_cell: MazeCell = maze_map.cells[cr][cc]
@@ -130,8 +139,48 @@ def generate_prims_maze(maze_map: MazeMap, seed:int = 42) -> bool:
         
     yield True
 
+
+def generate_corridor_maze(maze_map: MazeMap, seed:int = 42) -> bool:
+    """ Novel maze generation algorithm which makes long corridors
+        Identical to prims or a "shuffled dfs"
+        pop() from a set which in python is ordered by hash!
+        Leads to long corridors
+    """
+    random.seed(seed)
+    directions = list(DIRECTIONS)
+    cell_set: Set[Tuple[int]] = {(0,0)}
+    visited = [ [False for _ in range(maze_map.num_columns)] for _ in range(maze_map.num_rows)]
+    parent: Dict[Tuple[int], Tuple[int]] = {(0,0):(0,0)}
+    while len(cell_set) > 0:
+        random_cell = cell_set.pop()
+        cr, cc = random_cell
+        # Visit the current cell
+        current_cell: MazeCell = maze_map.cells[cr][cc]
+        pr, pc = parent[(cr,cc)]
+        parent_cell: MazeCell = maze_map.cells[pr][pc]
+        current_cell.connect(pr, pc)
+        parent_cell.connect(cr, cc)
+        visited[cr][cc] = True
+        yield False
+        random.shuffle(directions)
+
+        # Append valid neighbors to queue
+        for dr, dc in directions:
+            nc = cc+dc
+            nr = cr+dr
+            # Add to stack if not previously visited
+            if(nc < maze_map.num_columns and
+                nc >= 0 and 
+                nr < maze_map.num_rows and
+                nr >= 0 and not visited[nr][nc]):
+                cell_set.add((nr, nc))
+                parent[(nr,nc)] = (cr,cc)
+        
+    yield True
+
 MAZE = {
     "dfs": generate_dfs_maze,
     "bfs": generate_bfs_maze,
     "prims": generate_prims_maze,
+    "corridor": generate_corridor_maze
 }

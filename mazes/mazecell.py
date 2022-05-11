@@ -11,6 +11,8 @@ class TileState(Enum):
     WALL_STATE = 1
     SEARCH_STATE = 2
     PATH_STATE = 3
+    START_SEARCH_STATE = 4
+    END_SEARCH_STATE = 5
 
 class MazeCell:
     TILE_WIDTH = 3
@@ -20,13 +22,17 @@ class MazeCell:
     WALL_COLOR: Color = Color(0,0,4,255),
     FLOOR_COLOR: Color = Color(255,255,255,255)
     SEARCH_COLOR: Color = Color(23,255,23,255)
-    PATH_COLOR: Color = Color(22, 22, 255, 255) 
+    PATH_COLOR: Color = Color(22, 22, 255, 255)
+    START_SEARCH_COLOR: Color = Color(255, 0, 255, 255)
+    END_SEARCH_COLOR: Color = Color(255, 255, 0, 255)
 
     STATE_TO_COLOR: Dict[int, Color] = {
         TileState.FLOOR_STATE: FLOOR_COLOR,
         TileState.WALL_STATE: WALL_COLOR,
         TileState.SEARCH_STATE: SEARCH_COLOR,
         TileState.PATH_STATE: PATH_COLOR,
+        TileState.START_SEARCH_STATE: START_SEARCH_COLOR,
+        TileState.END_SEARCH_STATE: END_SEARCH_COLOR
     }
 
     #@property
