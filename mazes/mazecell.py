@@ -19,7 +19,7 @@ class MazeCell:
     TILE_HEIGHT = 3
     CELL_WIDTH = TILE_WIDTH * 3
     CELL_HEIGHT = TILE_HEIGHT * 3
-    WALL_COLOR: Color = Color(0,0,4,255),
+    WALL_COLOR: Color = Color(0,0,4,255)
     FLOOR_COLOR: Color = Color(255,255,255,255)
     SEARCH_COLOR: Color = Color(23,255,23,255)
     PATH_COLOR: Color = Color(22, 22, 255, 255)
@@ -83,7 +83,7 @@ class MazeCell:
 
         # Clear center tile
         self.tiles[1][1] = floor_state
-        
+
         # Clear wall separating adjacent cell from this one
         self.tiles[1+adjacent_row - self.row][1+adjacent_col - self.col] = floor_state
         self.draw()
